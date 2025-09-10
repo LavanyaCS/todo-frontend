@@ -13,11 +13,11 @@ function App() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   useEffect(() => {
-    if (token) {
-      try {
-        const decode = jwtDecode(token);
-        const currentPath = window.location.pathname;
-       if (currentPath === "/") {
+  if (token) {
+    try {
+      const decode = jwtDecode(token);
+      const currentPath = window.location.pathname;
+      if (currentPath === "/") {
         if (decode?.role === 'admin') {
           navigate("/dashboard", { replace: true });
         } else if (decode?.role === 'user') {
@@ -26,15 +26,19 @@ function App() {
           navigate("/", { replace: true });
         }
       }
-      } catch (error) {
-        console.error("Invalid token:", error);
-        localStorage.removeItem("token");
-        navigate("/", { replace: true });
-      }
-    } else {
+    } catch (error) {
+      console.error("Invalid token:", error);
+      localStorage.removeItem("token");
       navigate("/", { replace: true });
     }
-  }, [token, navigate]);
+  } else {
+    const currentPath = window.location.pathname;
+    if (currentPath !== "/register") {
+      navigate("/", { replace: true });
+    }
+  }
+}, [token, navigate]);
+
   return (
     <div className="h-screen w-full flex flex-col">
 

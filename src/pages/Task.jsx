@@ -41,15 +41,16 @@ const [openMenuid,setOpenMenuId] = useState(null);
           headers: { Authorization: `Bearer ${token}` }
         });
       }
-      setTasks([res.data.task, ...tasks]);
+      // setTasks([res.data.task, ...tasks]);
       console.log(res.data);
       console.log(res.data.message);
-      alert(res.data.message);
+      // alert(res.data.message);
       // console.log(res.data.tasks);
       setTaskForm({title:"",description:"",dueDate:"",status:"",priority:""});
       setShowModal(false);
       setEditTask(false);
       setEditTaskId(null);
+      //fetch list
       fetchTasks();
     }
     catch (err) {
@@ -152,25 +153,25 @@ fetchTasks()
                         <span className="w-28 font-medium">Status</span><span className="w-2">:</span>
                         <span className={`${
                   data.status.toLowerCase() === "completed"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-green-100 text-green-700 px-2 rounded"
                     : data.status.toLowerCase() === "in-progress"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-yellow-100 text-yellow-700 px-2 rounded"
                     : data.status.toLowerCase() === "pending"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-blue-100 text-blue-700 px-2 rounded"
+                    : "bg-red-100 text-red-700 px-2 rounded"
                 }`}
                           >{data.status}</span>
                       </p>
                        <p className="flex gap-4 mb-2 capitalize">
                         <span className="w-28 font-medium">Priority</span><span className="w-2">:</span>
-                        <span className={`${
+                        <span className={ `${
                   data.priority === "Low"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-green-100 text-green-700 px-2 rounded"
                     : data.priority === "Medium"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-yellow-100 text-yellow-700 px-2 rounded"
                     : data.priority === "High"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-blue-100 text-blue-700 px-2 rounded"
+                    : "bg-red-100 text-red-700 px-2 rounded"
                 }`}
                           >{data.priority}</span>
                       </p>
@@ -216,8 +217,8 @@ fetchTasks()
           )
         }
         {showModal && (
-          <div className="fixed inset-0 bg-black-10 bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg w-96 py-2 relative">
+          <div className="fixed inset-0 bg-[#0000003b] bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-96 py-2 relative h-[31rem]">
               <div className="px-6">
                 {/* Close Button */}
                 <button
@@ -230,7 +231,7 @@ fetchTasks()
                 <h3 className="text-lg font-semibold mb-1">{editTask ? 'Edit Task' : 'Add Task' }</h3></div>
               <form className="space-y-4 w-full" onSubmit={handleTaskSubmit}>
                 <div className="border-y px-6 py-3 border-slate-200 w-full">
-                  <label htmlFor="name" className="block my-1 text-sm font-medium text-left text-black">Title</label>
+                  <label htmlFor="name" className="block mb-1 text-sm font-medium text-left text-black">Title</label>
                   <input type="text" onChange={handleChange} name="title" value={taskform.title} placeholder="Enter a Title"
                     className="w-full px-4 py-2 border rounded" />
                   <label htmlFor="description" className="block my-1 text-sm font-medium text-left text-black">Description</label>
@@ -253,17 +254,17 @@ fetchTasks()
                                     <label htmlFor="dueDate" className="block my-1 text-sm font-medium text-left text-black">Due Date</label>
                   <input type="date" onChange={handleChange} name="dueDate" value={taskform.dueDate} placeholder="Enter a Due Date"
                     className="w-full px-4 py-2 border rounded" />
-                <div className="flex justify-end gap-4 px-6 -mt-1">
+                </div><div className="flex justify-end gap-4 px-6 -mt-1">
                   <button type="submit" 
                   disabled={!taskform.title || !taskform.description || !taskform.priority || !taskform.dueDate}
-                  className="w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
+                  className="w-full py-2 text-white cursor-pointer bg-gray-700 rounded-lg hover:bg-gray-800">
                     {editTask ?'Edit' : 'Add' }
                   </button>
-                  <button onClick={() => setShowModal(false)} className="w-full py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                  <button onClick={() => setShowModal(false)} className="cursor-pointer w-full py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
                     Cancel
                   </button>
 
-                </div></div>
+                </div>
               </form>
             </div></div>
         )}
