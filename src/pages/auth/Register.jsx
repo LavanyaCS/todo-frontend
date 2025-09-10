@@ -73,7 +73,9 @@ toast.success("Registration successful!");
               </span>
             </div>
             <label htmlFor="role" className="block mb-1 text-sm font-medium text-left text-black">Role</label>
-            <select onChange={handleChange} required name="role" className="w-full px-4 py-2 border rounded">
+            <select onChange={handleChange} required name="role"
+             className="w-full px-4 py-2 border rounded"
+             value={form.role} >
                <option value="" disabled hidden>---Select a Role---</option>
               <option value="admin" >Admin</option>
               <option value="user" >User</option>
