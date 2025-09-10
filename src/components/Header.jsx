@@ -102,7 +102,7 @@ function Header() {
           >
             Logout
           </button>
-          <span>Hi Lavanya</span>
+          {/* <span>Hi Lavanya</span> */}
         </div>
       )}
     </div>
