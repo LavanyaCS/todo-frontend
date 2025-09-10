@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+.bg-image-auth {
+  background:url('assets/images/sign-up.png') no-repeat !important;
+  background-position: center;background-size: cover;
+
+}
