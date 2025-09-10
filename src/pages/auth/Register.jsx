@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { baseUrl } from '../../api';
+import { toast } from "react-toastify";
+import { jwtDecode } from 'jwt-decode';
 function Register() {
   const [form, setForm] = useState({
     username: "", email: "", password: "", role: ""
@@ -24,10 +26,17 @@ function Register() {
       setLoading(true);
       const res = await axios.post(`${baseUrl}/api/auth/register`, form);
       localStorage.setItem("token", res.data.token);
-      navigate("/")
+      const decode = jwtDecode(res.data.token);
+toast.success("Registration successful!");
+    if (decode?.role === "admin") {
+      navigate("/dashboard");
+    } else {
+      navigate("/home");
+    }
     }
     catch (err) {
       if (err.response?.data?.message) {
+        toast.error(err.response?.data?.message || "Something went wrong");
         setError(err.response.data.message); // Backend error message
       } else {
         setError('Something went wrong. Please try again.');
@@ -54,7 +63,7 @@ function Register() {
               <label htmlFor="password" className="block mb-1 text-sm font-medium text-left text-black">Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password" name="password"
+                placeholder="Password" name="password" minLength={6}
                 className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700 focus:outline-0"
                 onChange={handleChange} required
 
@@ -65,7 +74,7 @@ function Register() {
             </div>
             <label htmlFor="role" className="block mb-1 text-sm font-medium text-left text-black">Role</label>
             <select onChange={handleChange} required name="role" className="w-full px-4 py-2 border rounded">
-              <option value="" >---Select a Role---</option>
+               <option value="" disabled hidden>---Select a Role---</option>
               <option value="admin" >Admin</option>
               <option value="user" >User</option>
             </select>

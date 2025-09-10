@@ -4,49 +4,50 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { baseUrl } from '../../api';
 import { jwtDecode } from 'jwt-decode';
-
+import { toast } from "react-toastify";
 function Login() {
-const [form,setForm] = useState({
-  email:"",password:""
-});
-const navigate = useNavigate();
-const [error,setError] = useState("");
-const [loading,setLoading]= useState(false);
-const handleChange = (e) => {
-  setForm({...form,[e.target.name]:e.target.value});
-}
-const [showPassword,setShowPassword] = useState(false);
-const handleTogglePasswordVisibility = (e) => {
-  setShowPassword(!showPassword);
-}
-const handleSubmit = async (e) => {
-
-   e.preventDefault();console.log("Form Data:", form);
-  setError("");
-  setLoading(true);
-  try{
-    const res = await axios.post(`${baseUrl}/api/auth/login`,form);
-    console.log("Logged Successfully",res.data);
-    localStorage.setItem("token",res.data.token);
-    const decode = jwtDecode(res.data.token);
-    if(decode.role === 'admin'){
-      navigate("/dashboard")
-    }else{
-      navigate("/home");
-    }
-
+  const [form, setForm] = useState({
+    email: "", password: ""
+  });
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
-   catch (err) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message); // Backend error message
+  const [showPassword, setShowPassword] = useState(false);
+  const handleTogglePasswordVisibility = (e) => {
+    setShowPassword(!showPassword);
+  }
+  const handleSubmit = async (e) => {
+
+    e.preventDefault(); console.log("Form Data:", form);
+    setLoading(true);
+    try {
+      const res = await axios.post(`${baseUrl}/api/auth/login`, form);
+      console.log("Login Successfully", res.data);
+
+      toast.success("Login successful!");
+      localStorage.setItem("token", res.data.token);
+      const decode = jwtDecode(res.data.token);
+      if (decode.role === 'admin') {
+        navigate("/dashboard")
       } else {
-        setError('Something went wrong. Please try again.');
+        navigate("/home");
+      }
+      setForm({ email: "", password: "" });
+    }
+    catch (err) {
+      if (err.response?.data?.message) {
+
+        toast.error(err.response.data.message);
+      } else {
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
     }
 
-}
+  }
   return (
     <div className='bg-image-auth w-full'>
       <div className="flex flex-col items-center justify-center w-full h-screen px-4 text-center bg-center bg-cover bg-image">
@@ -71,17 +72,16 @@ const handleSubmit = async (e) => {
               </span>
             </div>
 
-            {error && <p className='text-red-500 text-sm font-semibold'>{error}</p>}
 
             <button type="submit" disabled={loading} className="w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
-              {loading ? "Login..." : "Login"}
+              {loading ? "Logging in..." : "Login"}
             </button>
             <p className="text-sm text-center text-black">
-          Don't have an account?{' '}
-          <Link to="/register" className="font-semibold hover:underline">
-            Sign Up
-          </Link>
-        </p>
+              Don't have an account?{' '}
+              <Link to="/register" className="font-semibold hover:underline">
+                Sign Up
+              </Link>
+            </p>
 
           </form>
         </div></div>

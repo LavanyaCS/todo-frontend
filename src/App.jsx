@@ -9,10 +9,12 @@ import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect } from 'react'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  useEffect(() => {
+useEffect(() => {
   if (token) {
     try {
       const decode = jwtDecode(token);
@@ -27,7 +29,7 @@ function App() {
         }
       }
     } catch (error) {
-      console.error("Invalid token:", error);
+      toast.error("Invalid token:", error);
       localStorage.removeItem("token");
       navigate("/", { replace: true });
     }
@@ -62,6 +64,7 @@ function App() {
         </Routes>
       </div>
       {token && <Footer />}
+       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   )
 }

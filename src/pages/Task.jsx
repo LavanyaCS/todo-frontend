@@ -5,7 +5,7 @@ import { baseUrl } from '../api';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import dayjs from "dayjs";
-
+import { toast } from 'react-toastify';
 function Task() {
   const [taskform,setTaskForm] = useState({
     title:"",description:"",status:"",priority:"",dueDate:""
@@ -35,15 +35,18 @@ const [openMenuid,setOpenMenuId] = useState(null);
         res = await axios.put(`${baseUrl}/api/tasks/${editTaskId}`,taskform,{
           headers: { Authorization: `Bearer ${token}` }
         });
+         setTasks(tasks.map(t => (t._id === editTaskId ? res.data.task : t)));
       }
       else{
         res = await axios.post(`${baseUrl}/api/tasks/`,taskform,{
           headers: { Authorization: `Bearer ${token}` }
         });
+        setTasks([res.data.task, ...tasks]); 
       }
       // setTasks([res.data.task, ...tasks]);
       console.log(res.data);
       console.log(res.data.message);
+      toast.success(res.data.message || "Task created successfully!");
       // alert(res.data.message);
       // console.log(res.data.tasks);
       setTaskForm({title:"",description:"",dueDate:"",status:"",priority:""});
@@ -51,11 +54,11 @@ const [openMenuid,setOpenMenuId] = useState(null);
       setEditTask(false);
       setEditTaskId(null);
       //fetch list
-      fetchTasks();
+      // fetchTasks();
     }
     catch (err) {
       console.error(err);
-    alert(err.response?.data?.message || 'Something went wrong');
+    toast.error(err.response?.data?.message || "Something went wrong");
     }
   }
   const fetchTasks = async() => {
@@ -78,7 +81,7 @@ const [openMenuid,setOpenMenuId] = useState(null);
     }
     catch (err) {
       console.error(err);
-    alert(err.response?.data?.message || 'Something went wrong');
+    toast.error(err.response?.data?.message || "Something went wrong");
     }
 
   }
@@ -94,11 +97,12 @@ const [openMenuid,setOpenMenuId] = useState(null);
 const res = await axios.delete(`${baseUrl}/api/tasks/${id}`,{
   headers: { Authorization:`Bearer ${token}`}
 });
-alert(res.data.message);
+toast.success(res.data.message);
 fetchTasks()
       }
       catch(err){
-      console.error(err);alert(err.response?.data?.message || "Something went wrong");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
 
   }
@@ -239,14 +243,14 @@ fetchTasks()
                     className="w-full px-4 py-2 border rounded" ></textarea>
                   <label htmlFor="status" className="block my-1 text-sm font-medium text-left text-black">Status</label>
                   <select onChange={handleChange} name="status" value={taskform.status} className="w-full px-4 py-2 border rounded">
-                    <option value="" >---Select a Status---</option>
+                     <option value="" disabled hidden>---Select a Status---</option>
                     <option value="Pending" >Pending</option>
                     <option value="In-Progress" >In-Progress</option>
                     <option value="Completed" >Completed</option>
                   </select>
                   <label htmlFor="priority" className="block my-1 text-sm font-medium text-left text-black">Priority</label>
                   <select onChange={handleChange} name="priority" value={taskform.priority} className="w-full px-4 py-2 border rounded">
-                    <option value="" >---Select a Priority---</option>
+                     <option value="" disabled hidden>---Select a Priority---</option>
                     <option value="Low" >Low</option>
                     <option value="Medium" >Medium</option>
                     <option value="High" >High</option>
