@@ -3,17 +3,25 @@ import React, { useState,useEffect } from 'react'
 import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts";
 import axios from 'axios'
 import { baseUrl } from "../api"
+import { useNavigate } from 'react-router';
 
 
 function Dashboard() {
   const [isAdmin,setAdmin] = useState(false);
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
   useEffect(() => {
     if (token) {
       const decode = jwtDecode(token);
-      setAdmin(decode.role === "admin");
+      if (decode.role !== "admin") {
+      navigate("/home", { replace: true, state: { message: "Admins only!" } });
+    } else {
+      setAdmin(true);
     }
-  }, [token]);
+      // setAdmin(decode.role === "admin");
+
+    }
+  }, [token,navigate]);
   //Task
   const [tasks,setTasks] = useState([]);
   const [statusData,setStatusData] = useState([]);  // Pending", "In-Progress", "Completed
@@ -103,7 +111,7 @@ function Dashboard() {
 
   return (
     <div>
-      {isAdmin && 
+      {isAdmin ? (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
 
@@ -182,7 +190,12 @@ function Dashboard() {
           </div>
         </div>
       </div>
-</div>      }
+</div>  ) : (
+  <div className="p-6 text-center text-red-600 font-semibold">
+    You are not authorized to view this page.
+  </div>
+)
+    }
       
     </div>
   )
