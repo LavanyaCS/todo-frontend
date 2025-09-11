@@ -19,27 +19,43 @@ function Register() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
+   const validate = () => {
+    let errValidate = {};
+
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errValidate.email = "Please enter a valid email address";
+    }
+
+    if (form.password.length < 6) {
+      errValidate.password = "Password must be at least 6 characters long";
+    }
+
+    setError(errValidate);
+    return Object.keys(errValidate).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setError('');
     try {
       setLoading(true);
       const res = await axios.post(`${baseUrl}/api/auth/register`, form);
       localStorage.setItem("token", res.data.token);
       const decode = jwtDecode(res.data.token);
-toast.success("Registration successful!");
-    if (decode?.role === "admin") {
-      navigate("/dashboard");
-    } else {
-      navigate("/home");
-    }
+      toast.success("Registration successful!");
+      if (decode?.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/home");
+      }
     }
     catch (err) {
       if (err.response?.data?.message) {
         toast.error(err.response?.data?.message || "Something went wrong");
-        setError(err.response.data.message); // Backend error message
+        // setError(err.response.data.message); // Backend error message
       } else {
-        setError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -55,40 +71,44 @@ toast.success("Registration successful!");
             <label htmlFor="username" className="block mb-1 text-sm font-medium text-left text-black">UserName</label>
             <input type="text" onChange={handleChange} required name="username" placeholder="User Name"
               className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700  focus:outline-0" />
-            <label htmlFor="email" className="block mb-1 text-sm font-medium text-left text-black">Email Address</label>
-            <input type="email" onChange={handleChange} required name="email" placeholder="Email"
-              className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700  focus:outline-0"
-            />
-            <div className="relative">
-              <label htmlFor="password" className="block mb-1 text-sm font-medium text-left text-black">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password" name="password" minLength={6}
-                className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700 focus:outline-0"
-                onChange={handleChange} required
-
+            <div>            <label htmlFor="email" className="block mb-1 text-sm font-medium text-left text-black">Email Address</label>
+              <input type="email" onChange={handleChange} required name="email" placeholder="Email"
+                className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700  focus:outline-0"
               />
-              <span onClick={handleTogglePasswordVisibility} className="absolute top-1/2 right-3 cursor-pointer">
-                {showPassword ? (<EyeOff />) : (<Eye />)}
-              </span>
+              {error.email && <p className="text-red-500 text-sm flex">{error.email}</p>}
             </div>
+            <div>
+              <div className="relative">
+                <label htmlFor="password" className="block mb-1 text-sm font-medium text-left text-black">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password" name="password" minLength={6}
+                  className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700 focus:outline-0"
+                  onChange={handleChange} required
+
+                />
+                <span onClick={handleTogglePasswordVisibility} className="absolute top-1/2 right-3 cursor-pointer">
+                  {showPassword ? (<EyeOff />) : (<Eye />)}
+                </span>
+              </div>
+              {error.password && <p className="text-red-500 text-sm flex">{error.password}</p>}</div>
+
             <label htmlFor="role" className="block mb-1 text-sm font-medium text-left text-black">Role</label>
             <select onChange={handleChange} required name="role"
-             className="w-full px-4 py-2 border rounded"
-             value={form.role} >
-               <option value="" disabled hidden>---Select a Role---</option>
+              className="w-full px-4 py-2 border rounded"
+              value={form.role} >
+              <option value="" disabled hidden>---Select a Role---</option>
               <option value="admin" >Admin</option>
               <option value="user" >User</option>
             </select>
 
-            {error && <p className='text-red-500 text-sm font-semibold'>{error}</p>}
 
-            <button type="submit" disabled={loading} className="w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
+            <button type="submit" disabled={loading} className="cursor-pointer w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
               {loading ? "Registering..." : "Register"}
             </button>
             <p className="text-sm text-center text-black">
               Already have an account?{' '}
-              <Link to="/" className="font-semibold hover:underline">
+              <Link to="/" className="cursor-pointer font-semibold hover:underline">
                 Sign In
               </Link>
             </p>

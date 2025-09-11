@@ -11,10 +11,24 @@ function Login() {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({});
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
   const [showPassword, setShowPassword] = useState(false);
+  //Minor Validate
+  const validate = () => {
+    let errValidate = {}
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errValidate.email = "Please enter a valid email address";
+    }
+    if (form.password.length < 6) {
+      errValidate.password = "Password must be at least 6 characters long";
+    }
+    setError(errValidate);
+    return Object.keys(errValidate).length === 0;
+
+  }
   const handleTogglePasswordVisibility = (e) => {
     setShowPassword(!showPassword);
   }
@@ -22,6 +36,7 @@ function Login() {
 
     e.preventDefault(); console.log("Form Data:", form);
     setLoading(true);
+    if (!validate()) return;
     try {
       const res = await axios.post(`${baseUrl}/api/auth/login`, form);
       console.log("Login Successfully", res.data);
@@ -54,31 +69,36 @@ function Login() {
         <div className='w-1/2 max-w-2xl px-6 py-4 border rounded-lg xl:w-1/3 backdrop-blur-md bg-white/10 border-gray-500/10'>
           <form onSubmit={handleSubmit} className='space-y-4 w-full'>
             <h1 className='text-2xl font-bold text-center text-gray-900'>Sign In</h1>
-            <label htmlFor="email" className="block mb-1 text-sm font-medium text-left text-black">Email Address</label>
-            <input type="email" onChange={handleChange} required name="email" placeholder="Email"
-              className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700  focus:outline-0"
-            />
-            <div className="relative">
-              <label htmlFor="password" className="block mb-1 text-sm font-medium text-left text-black">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password" name="password"
-                className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700 focus:outline-0"
-                onChange={handleChange} required
-
+            <div><label htmlFor="email" className="block mb-1 text-sm font-medium text-left text-black">Email Address</label>
+              <input type="email" onChange={handleChange} required name="email" placeholder="Email"
+                className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700  focus:outline-0"
               />
-              <span onClick={handleTogglePasswordVisibility} className="absolute top-1/2 right-3 cursor-pointer">
-                {showPassword ? (<EyeOff />) : (<Eye />)}
-              </span>
+              {error.email && <p className="text-red-500 text-sm flex">{error.email}</p>}</div>
+            <div>
+
+              <div className="relative">
+                <label htmlFor="password" className="block mb-1 text-sm font-medium text-left text-black">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password" name="password"
+                  className="w-full px-4 py-2 border border-gray-900 rounded focus:border-gray-700   focus:ring-1 focus:ring-gray-700 focus:outline-0"
+                  onChange={handleChange} required
+
+                />
+                <span onClick={handleTogglePasswordVisibility} className="absolute top-1/2 right-3 cursor-pointer">
+                  {showPassword ? (<EyeOff />) : (<Eye />)}
+                </span>
+              </div>
+              {error.password && <p className="text-red-500 text-sm flex">{error.password}</p>}
+
             </div>
 
-
-            <button type="submit" disabled={loading} className="w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
+            <button type="submit" disabled={loading} className="cursor-pointer w-full py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-800">
               {loading ? "Logging in..." : "Login"}
             </button>
             <p className="text-sm text-center text-black">
               Don't have an account?{' '}
-              <Link to="/register" className="font-semibold hover:underline">
+              <Link to="/register" className="cursor-pointer font-semibold hover:underline">
                 Sign Up
               </Link>
             </p>
